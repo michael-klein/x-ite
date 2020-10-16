@@ -1,5 +1,5 @@
 import inc from "https://cdn.skypack.dev/incremental-dom";
-import { isComponent } from "./component";
+import { isComponent } from "./component.js";
 const {
   patch,
   text,
