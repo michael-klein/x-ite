@@ -1,0 +1,13 @@
+{
+  "name": "x-ite-example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "todomvc-app-css": "^2.3.0",
+    "todomvc-common": "^1.0.5"
+  }
+}

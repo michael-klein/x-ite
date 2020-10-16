@@ -1,0 +1,21 @@
+{
+  "name": "x-ite",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "serve": "es-dev-server --app-index ./example/index.html --node-resolve --watch --open"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "es-dev-server": "^1.48.1",
+    "snowpack": "^2.14.0"
+  },
+  "webDependencies": {
+    "incremental-dom": "^0.7.0",
+    "xstate": "^4.13.0",
+    "htm": "^3.0.4"
+  }
+}
