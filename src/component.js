@@ -1,5 +1,5 @@
 import { Machine, interpret, assign } from "https://cdn.skypack.dev/xstate";
-import { onPostRender, render, isRendering } from "./render";
+import { onPostRender, render, isRendering } from "./render.js";
 import inc from "https://cdn.skypack.dev/incremental-dom";
 const { notifications } = inc;
 

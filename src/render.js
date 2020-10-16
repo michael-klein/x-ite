@@ -12,8 +12,8 @@ const {
   attributes,
   symbols
 } = inc;
-import { normalizeHtmlResult } from "./html";
-import { removeEmptyTextNodes } from "./utils";
+import { normalizeHtmlResult } from "./html.js";
+import { removeEmptyTextNodes } from "./utils.js";
 
 const defaultHandler = attributes[symbols.default].bind(
   attributes[symbols.default]
