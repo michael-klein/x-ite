@@ -1,4 +1,4 @@
-import inc from "https://cdn.skypack.dev/incremental-dom";
+import inc from "./incremental_dom.js";
 import { isComponent } from "./component.js";
 const {
   patch,
@@ -46,17 +46,6 @@ const postRenderListeners = [];
 export const onPostRender = listener => {
   postRenderListeners.push(listener);
 };
-customElements.define(
-  "c-b",
-  class extends HTMLElement {
-    constructor() {
-      super();
-    }
-    connectedCallback() {
-      this.style.setProperty("display", "none");
-    }
-  }
-);
 function performRenderStep(htmlResult) {
   if (htmlResult !== undefined) {
     htmlResult = normalizeHtmlResult(htmlResult);
@@ -78,7 +67,7 @@ function performRenderStep(htmlResult) {
         };
       }
       elementVoid(
-        "c-b",
+        "#comment",
         null,
         null,
         "__component",

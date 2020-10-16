@@ -1,6 +1,6 @@
 import { Machine, interpret, assign } from "https://cdn.skypack.dev/xstate";
 import { onPostRender, render, isRendering } from "./render.js";
-import inc from "https://cdn.skypack.dev/incremental-dom";
+import inc from "./incremental_dom.js";
 const { notifications } = inc;
 
 notifications.nodesDeleted = nodes => {
@@ -15,7 +15,7 @@ notifications.nodesDeleted = nodes => {
 };
 notifications.nodesCreated = nodes => {
   nodes.forEach(node => {
-    if (node.tagName === "C-B") {
+    if (node.nodeName === "#comment" && node.__hook) {
       const hook = node.__hook;
       onPostRender(() => {
         if (hook && !hook.started) {
