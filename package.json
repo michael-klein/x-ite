@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "serve": "es-dev-server --app-index ./example/index.html --node-resolve --watch --open"
+    "serve": "es-dev-server --app-index ./index.html --node-resolve --watch --open"
   },
   "keywords": [],
   "author": "",
