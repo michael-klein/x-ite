@@ -30,6 +30,14 @@ const RENDER = "RENDER";
 export const isComponent = obj => !!obj[COMPONENT];
 export const component = ({ machine, options, render: renderMethod }) => {
   const prepareMachine = (machine, props) => {
+    if (!machine) {
+      machine = {
+        initial: "i",
+        states: {
+          i: {}
+        }
+      };
+    }
     if (typeof machine === "function") {
       machine = machine(props);
     }
@@ -62,7 +70,8 @@ export const component = ({ machine, options, render: renderMethod }) => {
   const comp = (hook, props) => {
     if (!hook.service) {
       hook.service = interpret(
-        Machine(prepareMachine(machine, props), prepareOptions(options, props))
+        Machine(prepareMachine(machine, props), prepareOptions(options, props)),
+        { execute: false }
       );
       hook.service.start();
       hook.state = hook.service.machine.initialState;
@@ -76,7 +85,13 @@ export const component = ({ machine, options, render: renderMethod }) => {
         hook.started = true;
         hook.service.onTransition(state => {
           hook.state = state;
-          render(cp.parentElement, hook.render(), false, cp);
+          const doRender = () =>
+            render(cp.parentElement, hook.render(), false, cp);
+          if (isRendering()) {
+            onPostRender(() => doRender());
+          } else {
+            doRender();
+          }
         });
       };
     }
