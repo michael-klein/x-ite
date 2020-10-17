@@ -154,8 +154,10 @@ export const TodoList = component({
                     label=${item.label}
                     done=${item.done}
                     onDelete=${id => send("DELETE", { id })}
-                    onClick=${() =>
-                      send("TOGGLE", { ...item, done: !item.done })}
+                    onClick=${e => {
+                      e.preventDefault();
+                      send("TOGGLE", { ...item, done: !item.done });
+                    }}
                   />
                 `
             )}
