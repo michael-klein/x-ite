@@ -1,5 +1,5 @@
 import { assign } from "https://cdn.skypack.dev/xstate";
-import { mergeDeep } from "./utils";
+import { mergeDeep } from "./utils.js";
 
 export const mixin = cb => {
   return (...args) => machine => mergeDeep(machine, cb(...args));
