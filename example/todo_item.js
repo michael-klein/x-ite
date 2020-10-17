@@ -1,19 +1,21 @@
+import { props } from "../src/actions.js";
 import { html, component, assign } from "../src/index.js";
 
 export const TodoItem = component({
-  render: ({ props }) => {
-    const { done, label, id } = props;
+  machine: props()({}),
+  render: ({ state }) => {
+    const { done, label, id, onClick, onDelete } = state.context.props;
     return html`
       <li data-id="${id}" class="${done ? "completed" : ""}">
         <div class="view">
           <input
             class="toggle"
             type="checkbox"
-            onclick=${props.onClick}
+            onclick=${onClick}
             checked=${done}
           />
           <label>${label}</label>
-          <button class="destroy" onclick=${() => props.onDelete(id)}></button>
+          <button class="destroy" onclick=${() => onDelete(id)}></button>
         </div>
       </li>
     `;

@@ -1,6 +1,8 @@
 import { Machine, interpret, assign } from "https://cdn.skypack.dev/xstate";
 import { onPostRender, render, isRendering } from "./render.js";
 import inc from "./incremental_dom.js";
+import { mergeDeep } from "./utils.js";
+import { PROPS } from "./actions.js";
 const { notifications } = inc;
 
 notifications.nodesDeleted = nodes => {
@@ -26,39 +28,24 @@ notifications.nodesCreated = nodes => {
   });
 };
 const COMPONENT = Symbol();
-const RENDER = "RENDER";
 export const isComponent = obj => !!obj[COMPONENT];
 export const component = ({ machine, options, render: renderMethod }) => {
   const prepareMachine = (machine, props) => {
-    if (!machine) {
-      machine = {
+    machine = mergeDeep(
+      {
         initial: "i",
         states: {
           i: {}
         }
-      };
-    }
+      },
+      machine ?? {}
+    );
     if (typeof machine === "function") {
       machine = machine(props);
     }
     if (!machine.context) {
       machine.context = {};
     }
-    machine.context.___renderCount = 0;
-    if (!machine.on) {
-      machine.on = {
-        actions: [
-          assign((context, event) => {
-            const newContext = {
-              ...context
-            };
-            newContext.___renderCount++;
-            return newContext;
-          })
-        ]
-      };
-    }
-    machine.on[RENDER];
     return machine;
   };
   const prepareOptions = (options, props) => {
@@ -70,32 +57,32 @@ export const component = ({ machine, options, render: renderMethod }) => {
   const comp = (hook, props) => {
     if (!hook.service) {
       hook.service = interpret(
-        Machine(prepareMachine(machine, props), prepareOptions(options, props)),
-        { execute: false }
+        Machine(prepareMachine(machine, props), prepareOptions(options, props))
       );
       hook.service.start();
+      hook.service.send(PROPS, { value: props });
       hook.state = hook.service.machine.initialState;
       hook.render = () =>
         renderMethod({
           state: hook.state,
-          props: hook.props,
           ...hook.service
         });
-      hook.start = cp => {
-        hook.started = true;
-        hook.service.onTransition(state => {
-          hook.state = state;
+      hook.service.onTransition(state => {
+        hook.state = state;
+        if (hook.started) {
           const doRender = () =>
-            render(cp.parentElement, hook.render(), false, cp);
-          if (isRendering()) {
-            onPostRender(() => doRender());
-          } else {
+            render(hook.cp.parentElement, hook.render(), false, hook.cp);
+          if (!isRendering()) {
             doRender();
           }
-        });
+        }
+      });
+      hook.start = cp => {
+        hook.cp = cp;
+        hook.started = true;
       };
     }
-    hook.props = props;
+    hook.service.send(PROPS, { value: props });
     return hook.render();
   };
   comp[COMPONENT] = true;

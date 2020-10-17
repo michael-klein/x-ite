@@ -103,7 +103,8 @@ export const TodoList = component({
     }
   },
   render: ({ state, send }) => {
-    const { todoItems, inputValue } = state.context;
+    const { todoItems, inputValue, counter } = state.context;
+
     const filteredItem = todoItems.filter(item => {
       if (state.value === "all") {
         return true;
