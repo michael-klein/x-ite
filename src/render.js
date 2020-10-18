@@ -1,4 +1,4 @@
-import inc from "./incremental_dom.js";
+import inc from "./vendor/incremental_dom.js";
 import { isComponent } from "./component.js";
 const {
   patch,

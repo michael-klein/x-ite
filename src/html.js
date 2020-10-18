@@ -1,4 +1,4 @@
-import htm from "https://cdn.skypack.dev/htm";
+import htm from "./vendor/htm.js";
 export function normalizeHtmlResult(htmlResult) {
   if (Array.isArray(htmlResult)) {
     return {

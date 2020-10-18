@@ -1,4 +1,4 @@
-import { assign } from "https://cdn.skypack.dev/xstate";
+import { assign } from "./vendor/xstate.js";
 import { mergeDeep } from "./utils.js";
 
 export const mix = (...mixins) => {

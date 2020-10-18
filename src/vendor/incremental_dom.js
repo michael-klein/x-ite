@@ -433,8 +433,7 @@ var incrementalDomCjs = createCommonjsModule(function(module, exports) {
    * Applies a property to a given Element.
    * @param el The element to apply the property to.
    * @param name The property's name.
-   * @param value The property's value.
-   */
+   * @param value The property's value. */
   function applyProp(el, name, value) {
     el[name] = value;
   }

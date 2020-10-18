@@ -1,6 +1,6 @@
-import { Machine, interpret, assign } from "https://cdn.skypack.dev/xstate";
+import { Machine, interpret, assign } from "./vendor/xstate.js";
 import { onPostRender, render, isRendering } from "./render.js";
-import inc from "./incremental_dom.js";
+import inc from "./vendor/incremental_dom.js";
 import { deepEqual, mergeDeep } from "./utils.js";
 import { EFFECT, PROPS, STOP } from "./actions.js";
 const { notifications } = inc;
