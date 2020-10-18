@@ -74,3 +74,16 @@ export function mergeDeep(target, ...sources) {
 
   return mergeDeep(target, ...sources);
 }
+
+export function deepEqual(a, b, isInProps = false) {
+  if (typeof a === "function" && isInProps) {
+    return true;
+  }
+  if (a && b && typeof a == "object" && typeof b == "object") {
+    if (Object.keys(a).length != Object.keys(b).length) return false;
+    for (var key in a)
+      if (!deepEqual(a[key], b[key], isInProps || key === "props"))
+        return false;
+    return true;
+  } else return a === b;
+}

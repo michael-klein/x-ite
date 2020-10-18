@@ -1,16 +1,16 @@
 import { Machine, interpret, assign } from "https://cdn.skypack.dev/xstate";
 import { onPostRender, render, isRendering } from "./render.js";
 import inc from "./incremental_dom.js";
-import { mergeDeep } from "./utils.js";
-import { PROPS } from "./actions.js";
+import { deepEqual, mergeDeep } from "./utils.js";
+import { EFFECT, PROPS, STOP } from "./actions.js";
 const { notifications } = inc;
 
 notifications.nodesDeleted = nodes => {
   nodes.forEach(node => {
     if (node.tagName === "C-B" && node.__hook) {
       const hook = node.__hook;
-      if (hook.service) {
-        hook.service.stop();
+      if (hook.stop) {
+        hook.stop();
       }
     }
   });
@@ -59,21 +59,41 @@ export const component = ({ machine, options, render: renderMethod }) => {
       hook.service = interpret(
         Machine(prepareMachine(machine, props), prepareOptions(options, props))
       );
+      hook.stop = () => {
+        hook.service.send(STOP);
+        hook.service.stop();
+      };
       hook.service.start();
       hook.service.send(PROPS, { value: props });
       hook.state = hook.service.machine.initialState;
-      hook.render = () =>
-        renderMethod({
+      hook.render = () => {
+        const result = renderMethod({
           state: hook.state,
           ...hook.service
         });
+        onPostRender(() => {
+          hook.service.send(EFFECT);
+        });
+        return result;
+      };
+      let queued = false;
+
       hook.service.onTransition(state => {
+        const hasChange =
+          hook.state.value !== state.value ||
+          !deepEqual(state.context, hook.state.context);
         hook.state = state;
-        if (hook.started) {
-          const doRender = () =>
-            render(hook.cp.parentElement, hook.render(), false, hook.cp);
-          if (!isRendering()) {
-            doRender();
+        if (hook.started && hasChange) {
+          if (!queued) {
+            queued = true;
+            requestAnimationFrame(() => {
+              queued = false;
+              const doRender = () =>
+                render(hook.cp.parentElement, hook.render(), false, hook.cp);
+              if (!isRendering()) {
+                doRender();
+              }
+            });
           }
         }
       });

@@ -1,11 +1,15 @@
 import { assign } from "https://cdn.skypack.dev/xstate";
 import { mergeDeep } from "./utils.js";
 
-export const mixin = cb => {
-  return (...args) => machine => mergeDeep(machine, cb(...args));
+export const mix = (...mixins) => {
+  let machine = {};
+  for (const mixin of mixins) {
+    machine = mergeDeep(machine, mixin);
+  }
+  return machine;
 };
 export const PROPS = "__PROPS";
-export const props = mixin(propDefinitions => {
+export const props = propDefinitions => {
   return {
     context: {
       props: propDefinitions
@@ -20,4 +24,46 @@ export const props = mixin(propDefinitions => {
       }
     }
   };
-});
+};
+
+export const EFFECT = "__EFFECT";
+export const STOP = "__STOP";
+export const effect = (cb, dependenciesProducer = () => undefined) => {
+  let prevDependencies = undefined;
+  let cleanUp;
+  return {
+    on: {
+      [EFFECT]: {
+        actions: [
+          context => {
+            const dependencies = dependenciesProducer(context);
+            const canRun =
+              dependencies === undefined ||
+              prevDependencies === undefined ||
+              dependencies.find(
+                (dep, index) => prevDependencies[index] !== dep
+              );
+            prevDependencies = dependencies;
+            if (canRun) {
+              if (cleanUp) {
+                cleanUp(context);
+                cleanUp = undefined;
+              }
+              cleanUp = cb(context);
+            }
+          }
+        ]
+      },
+      [STOP]: {
+        actions: [
+          context => {
+            if (cleanUp) {
+              cleanUp(context);
+              cleanUp = undefined;
+            }
+          }
+        ]
+      }
+    }
+  };
+};
