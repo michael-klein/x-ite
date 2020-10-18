@@ -1,7 +1,13 @@
-import { html, component, mix, effect, props } from "../src/index.js";
+import { html, component, props } from "../src/index.js";
 
 export const TodoItem = component({
-  machine: props(),
+  machine: props({
+    done: false,
+    onClick: () => {},
+    onDelete: () => {},
+    id: "",
+    label: ""
+  }),
   render: ({ state }) => {
     const { done, label, id, onClick, onDelete } = state.context.props;
     return html`

@@ -1,5 +1,7 @@
 import { html, assign, component, effect, mix } from "../src/index.js";
+import { TodoFooter } from "./todo_footer.js";
 import { TodoItem } from "./todo_item.js";
+import { TodoHeader } from "./todo_header.js";
 
 const getNewItem = label => ({ id: Date.now(), label, done: false });
 export const TodoList = component({
@@ -109,7 +111,7 @@ export const TodoList = component({
     }
   ),
   render: ({ state, send }) => {
-    const { todoItems, inputValue, counter } = state.context;
+    const { todoItems, inputValue } = state.context;
 
     const filteredItem = todoItems.filter(item => {
       if (state.value === "all") {
@@ -121,27 +123,13 @@ export const TodoList = component({
       }
       return false;
     });
-    const getLeft = () => {
-      const itemsLeft = todoItems.filter(item => !item.done);
-      if (itemsLeft.length === 1) {
-        return "1 item left";
-      } else {
-        return `${itemsLeft.length} items left`;
-      }
-    };
     return html`
       <section class="todoapp">
-        <header class="header">
-          <h1>todos</h1>
-          <input
-            class="new-todo"
-            placeholder="What needs to be done?"
-            autofocus
-            oninput=${send}
-            value=${inputValue}
-            onkeyup=${e => e.key === "Enter" && send("ADD")}
-          />
-        </header>
+        <${TodoHeader}
+          inputValue=${inputValue}
+          onEnter=${() => send("ADD")}
+          onInputValueChange=${send}
+        />
         <section class="main">
           <input
             id="toggle-all"
@@ -169,38 +157,12 @@ export const TodoList = component({
             )}
           </ul>
         </section>
-        <footer class="footer">
-          <span class="todo-count">${getLeft()}</span>
-          <ul class="filters">
-            <li>
-              <a
-                href="#/"
-                class=${state.value === "all" && "selected"}
-                onclick=${() => send("ALL")}
-                >All</a
-              >
-            </li>
-            <li>
-              <a
-                href="#/active"
-                class=${state.value === "active" && "selected"}
-                onclick=${() => send("ACTIVE")}
-                >Active</a
-              >
-            </li>
-            <li>
-              <a
-                href="#/completed"
-                class=${state.value === "completed" && "selected"}
-                onclick=${() => send("COMPLETED")}
-                >Completed</a
-              >
-            </li>
-          </ul>
-          <button class="clear-completed" onclick=${() => send("CLEAR")}>
-            Clear completed
-          </button>
-        </footer>
+        <${TodoFooter}
+          show=${state.value}
+          numLeft=${todoItems.length}
+          onClear=${() => send("CLEAR")}
+          onFilterClicked=${send}
+        />
       </section>
     `;
   }
